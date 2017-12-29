@@ -2,7 +2,8 @@ import 'dart:io';
 
 const bool includeUndocumentedOpcodeUnitTests = false;
 
-String toHex(int value) => value.toRadixString(16).padLeft(2, '0');
+String toHex16(int value) => value.toRadixString(16).padLeft(2, '0');
+String toHex32(int value) => value.toRadixString(16).padLeft(4, '0');
 
 main() {
   var file = new File('../cambridge/EmulatorDart/test/fuse_unit_test.dart');
@@ -16,13 +17,13 @@ import '../z80.dart';
 import '../memory.dart';
 import '../utility.dart';
 
-Memory memory = new Memory();
+Memory memory = new Memory(false);
 Z80 z80 = new Z80(memory, startAddress: 0xA000);
 
-void Poke(int addr, int val) => memory.writeByte(addr, val);
-int Peek(int addr) => memory.readByte(addr);
+void poke(int addr, int val) => memory.writeByte(addr, val);
+int peek(int addr) => memory.readByte(addr);
 
-void LoadRegisters(int af, int bc, int de, int hl, int af_, int bc_, int de_,
+void loadRegisters(int af, int bc, int de, int hl, int af_, int bc_, int de_,
     int hl_, int ix, int iy, int sp, int pc) {
   z80.af = af;
   z80.bc = bc;
@@ -44,18 +45,18 @@ void LoadRegisters(int af, int bc, int de, int hl, int af_, int bc_, int de_,
 
 void checkRegisters(int af, int bc, int de, int hl, int af_, int bc_, int de_,
     int hl_, int ix, int iy, int sp, int pc) {
-  expect(z80.af, equals(af));
-  expect(z80.bc, equals(bc));
-  expect(z80.de, equals(de));
-  expect(z80.hl, equals(hl));
-  expect(z80.af_, equals(af_));
-  expect(z80.bc_, equals(bc_));
-  expect(z80.de_, equals(de_));
-  expect(z80.hl_, equals(hl_));
-  expect(z80.ix, equals(ix));
-  expect(z80.iy, equals(iy));
-  expect(z80.sp, equals(sp));
-  expect(z80.pc, equals(pc));
+  expect(z80.af, equals(af), reason: "Register AF mismatch");
+  expect(z80.bc, equals(bc, reason: "Register BC mismatch"));
+  expect(z80.de, equals(de, reason: "Register DE mismatch"));
+  expect(z80.hl, equals(hl, reason: "Register HL mismatch"));
+  expect(z80.af_, equals(af_), reason: "Register AF' mismatch");
+  expect(z80.bc_, equals(bc_), reason: "Register BC' mismatch");
+  expect(z80.de_, equals(de_), reason: "Register DE' mismatch");
+  expect(z80.hl_, equals(hl_), reason: "Register HL' mismatch");
+  expect(z80.ix, equals(ix), reason: "Register IX mismatch");
+  expect(z80.iy, equals(iy), reason: "Register IY mismatch");
+  expect(z80.sp, equals(sp), reason: "Register SP mismatch");
+  expect(z80.pc, equals(pc), reason: "Register PC mismatch");
 }
 
 void checkSpecialRegisters(int i, int r, bool iff1, bool iff2, int tStates) {
@@ -201,8 +202,8 @@ main() {
   // These too...
   for (int opCode = 0; opCode < 256; opCode++) {
     if ((opCode & 0x7) != 0x6) {
-      undocumentedOpcodeTests.add("ddcb${toHex(opCode)}");
-      undocumentedOpcodeTests.add("fdcb${toHex(opCode)}");
+      undocumentedOpcodeTests.add("ddcb${toHex16(opCode)}");
+      undocumentedOpcodeTests.add("fdcb${toHex16(opCode)}");
     }
   }
 
@@ -215,11 +216,12 @@ main() {
 
     while (inputLine < input.length) {
       testName = input[inputLine++];
-
+      sink.write("\n  // Test instruction $testName\n");
       sink.write("  test('$testName', () {\n");
 
+      sink.write("    // Set up machine initial state\n");
       var registers = input[inputLine++].split(' ');
-      sink.write("    LoadRegisters(");
+      sink.write("    loadRegisters(");
       sink.write("0x${registers[0]}, ");
       sink.write("0x${registers[1]}, ");
       sink.write("0x${registers[2]}, ");
@@ -247,7 +249,7 @@ main() {
         var addr = int.parse(pokes[0], radix: 16);
         var idx = 1;
         while (pokes[idx] != '-1') {
-          sink.write("    Poke($addr, 0x${pokes[idx]});\n");
+          sink.write("    poke(0x${toHex32(addr)}, 0x${pokes[idx]});\n");
           idx++;
           addr++;
         }
@@ -256,6 +258,7 @@ main() {
       inputLine++;
       inputLine++;
 
+      sink.write("\n    // Execute machine for tState cycles\n");
       sink.write("    while(z80.tStates < ${testRunLength}) {\n");
       sink.write("      z80.executeNextInstruction();\n");
       sink.write("    }\n");
@@ -268,6 +271,7 @@ main() {
         expectedLine++;
       }
 
+      sink.write("\n    // Test machine state is as expected\n");
       var expectedRegisters = expected[expectedLine].split(' ');
       expectedRegisters.removeWhere((item) => item.length == 0);
       sink.write("    checkRegisters(");
@@ -307,7 +311,7 @@ main() {
         var idx = 1;
         while (peeks[idx] != "-1")
         {
-          sink.write("    expect(memory.readByte($addr), equals(0x${peeks[idx]}));\n");
+          sink.write("    expect(peek($addr), equals(0x${peeks[idx]}));\n");
           idx++;
           addr++;
         }
@@ -315,9 +319,14 @@ main() {
       }
       expectedLine++;
 
-      sink.write("  });\n\n");
+      sink.write("  }");
+      
+      if (undocumentedOpcodeTests.contains(testName)) {
+        sink.write(", tags: 'undocumented'");
+      }
 
-      if (undocumentedOpcodeTests.contains(testName)) {}
+      sink.write(");\n\n");
+
     }
 
     sink.write(r"""
