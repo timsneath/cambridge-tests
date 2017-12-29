@@ -4,7 +4,7 @@ const bool includeUndocumentedOpcodeUnitTests = false;
 
 String toHex(int value) => value.toRadixString(16).padLeft(2, '0');
 
-main() async {
+main() {
   var file = new File('../cambridge/EmulatorDart/test/fuse_unit_test.dart');
   var sink = file.openWrite();
 
@@ -48,7 +48,8 @@ main() {
     memory.reset();
   });
   tearDown(() {});
-  """);
+
+""");
 
   // These unit tests stress undocumented Z80 opcodes
   var undocumentedOpcodeTests = [
@@ -178,8 +179,8 @@ main() {
     }
   }
 
-  List<String> input = await new File('tests.in').readAsLines();
-  List<String> expected = await new File('tests.expected').readAsLines();
+  List<String> input = new File('tests.in').readAsLinesSync();
+  List<String> expected = new File('tests.expected').readAsLinesSync();
 
   try {
     int inputLine = 0;
@@ -206,6 +207,8 @@ main() {
       sink.write("0x${registers[11]});\n");
 
       var special = input[inputLine++].split(' ');
+      special.removeWhere((item) => item.length == 0);
+
       sink.write("    z80.i = 0x${special[0]};\n");
       sink.write("    z80.r = 0x${special[1]};\n");
       sink.write("    z80.iff1 = ${special[2] == '1' ? 'true' : 'false'};\n");
@@ -227,9 +230,9 @@ main() {
       inputLine++;
 
       sink.write("    while(z80.tStates < ${testRunLength}) {\n");
-      sink.write("      z80.executeNextInstruction();");
-      sink.write("    }");
-      sink.write("  }\n\n");
+      sink.write("      z80.executeNextInstruction();\n");
+      sink.write("    }\n");
+      sink.write("  });\n\n");
 
       if (undocumentedOpcodeTests.contains(testName)) {}
     }
