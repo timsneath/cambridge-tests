@@ -261,7 +261,7 @@ main() {
       sink.write("    }\n");
 
       if (expected[expectedLine++] != testName) {
-        throw new Exception("Mismatch of input and output lines");
+        throw new Exception("Mismatch of input and output lines: $testName and ${expected[expectedLine-1]}");
       }
 
       while (expected[expectedLine].startsWith(' ')) {
@@ -298,8 +298,8 @@ main() {
       while (expected[expectedLine].length > 0 &&
           ((expected[expectedLine].codeUnitAt(0) >= '0'.codeUnits[0] && 
           expected[expectedLine].codeUnitAt(0) <= '9'.codeUnits[0]) ||
-          (expected[expectedLine].codeUnitAt(0) >= 'A'.codeUnits[0] && 
-          expected[expectedLine].codeUnitAt(0) <= 'F'.codeUnits[0])))
+          (expected[expectedLine].codeUnitAt(0) >= 'a'.codeUnits[0] && 
+          expected[expectedLine].codeUnitAt(0) <= 'f'.codeUnits[0])))
       {
         var peeks = expected[expectedLine].split(' ');
         peeks.removeWhere((item) => item.length == 0);
@@ -307,7 +307,7 @@ main() {
         var idx = 1;
         while (peeks[idx] != "-1")
         {
-          sink.write("    expect(memory.readByte($addr), equals(${peeks[idx]}));");
+          sink.write("    expect(memory.readByte($addr), equals(0x${peeks[idx]}));\n");
           idx++;
           addr++;
         }
