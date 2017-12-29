@@ -46,9 +46,9 @@ void loadRegisters(int af, int bc, int de, int hl, int af_, int bc_, int de_,
 void checkRegisters(int af, int bc, int de, int hl, int af_, int bc_, int de_,
     int hl_, int ix, int iy, int sp, int pc) {
   expect(z80.af, equals(af), reason: "Register AF mismatch");
-  expect(z80.bc, equals(bc, reason: "Register BC mismatch"));
-  expect(z80.de, equals(de, reason: "Register DE mismatch"));
-  expect(z80.hl, equals(hl, reason: "Register HL mismatch"));
+  expect(z80.bc, equals(bc), reason: "Register BC mismatch");
+  expect(z80.de, equals(de), reason: "Register DE mismatch");
+  expect(z80.hl, equals(hl), reason: "Register HL mismatch");
   expect(z80.af_, equals(af_), reason: "Register AF' mismatch");
   expect(z80.bc_, equals(bc_), reason: "Register BC' mismatch");
   expect(z80.de_, equals(de_), reason: "Register DE' mismatch");
