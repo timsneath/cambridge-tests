@@ -12,6 +12,15 @@ main() {
   String testName;
 
   sink.write(r"""
+// fuse_unit_test.dart -- translated Z80 unit tests from FUSE Z80 emulator
+// 
+// The FUSE emulator contains a large unit test suite of over 1,300 tests,
+// which cover both documented and undocumented opcodes:
+//   http://fuse-emulator.sourceforge.net/ 
+
+// Run tests with 
+//   pub run test test/fuse_unit_test.dart -x undocumented --no-color > test/results.txt
+
 import 'package:test/test.dart';
 import '../z80.dart';
 import '../memory.dart';
