@@ -42,6 +42,33 @@ void LoadRegisters(int af, int bc, int de, int hl, int af_, int bc_, int de_,
   z80.pc = pc;
 }
 
+void checkRegisters(int af, int bc, int de, int hl, int af_, int bc_, int de_,
+    int hl_, int ix, int iy, int sp, int pc) {
+  expect(z80.af, equals(af));
+  expect(z80.bc, equals(bc));
+  expect(z80.de, equals(de));
+  expect(z80.hl, equals(hl));
+  expect(z80.af_, equals(af_));
+  expect(z80.bc_, equals(bc_));
+  expect(z80.de_, equals(de_));
+  expect(z80.hl_, equals(hl_));
+  expect(z80.ix, equals(ix));
+  expect(z80.iy, equals(iy));
+  expect(z80.sp, equals(sp));
+  expect(z80.pc, equals(pc));
+}
+
+void checkSpecialRegisters(int i, int r, bool iff1, bool iff2, int tStates) {
+  expect(z80.i, equals(i));
+
+  // TODO: r is magic and we haven't done magic yet
+  // expect(z80.r, equals(r));
+
+  expect(z80.iff1, equals(iff1));
+  expect(z80.iff2, equals(iff2));
+  expect(z80.tStates, equals(tStates));
+}
+
 main() {
   setUp(() {
     z80.reset();
@@ -232,6 +259,62 @@ main() {
       sink.write("    while(z80.tStates < ${testRunLength}) {\n");
       sink.write("      z80.executeNextInstruction();\n");
       sink.write("    }\n");
+
+      if (expected[expectedLine++] != testName) {
+        throw new Exception("Mismatch of input and output lines");
+      }
+
+      while (expected[expectedLine].startsWith(' ')) {
+        expectedLine++;
+      }
+
+      var expectedRegisters = expected[expectedLine].split(' ');
+      expectedRegisters.removeWhere((item) => item.length == 0);
+      sink.write("    checkRegisters(");
+      sink.write("0x${expectedRegisters[0]}, ");
+      sink.write("0x${expectedRegisters[1]}, ");
+      sink.write("0x${expectedRegisters[2]}, ");
+      sink.write("0x${expectedRegisters[3]}, ");
+      sink.write("0x${expectedRegisters[4]}, ");
+      sink.write("0x${expectedRegisters[5]}, ");
+      sink.write("0x${expectedRegisters[6]}, ");
+      sink.write("0x${expectedRegisters[7]}, ");
+      sink.write("0x${expectedRegisters[8]}, ");
+      sink.write("0x${expectedRegisters[9]}, ");
+      sink.write("0x${expectedRegisters[10]}, ");
+      sink.write("0x${expectedRegisters[11]});\n");
+      expectedLine++;
+
+      var expectedSpecial = expected[expectedLine].split(' ');
+      expectedSpecial.removeWhere((item) => item.length == 0);
+      sink.write("    checkSpecialRegisters(");
+      sink.write("0x${expectedSpecial[0]}, ");
+      sink.write("0x${expectedSpecial[1]}, ");
+      sink.write("${expectedSpecial[2] == '1' ? 'true' : 'false'}, ");
+      sink.write("${expectedSpecial[3] == '1' ? 'true' : 'false'}, ");
+      sink.write("${expectedSpecial[6]});\n");
+      expectedLine++;
+
+      while (expected[expectedLine].length > 0 &&
+          ((expected[expectedLine].codeUnitAt(0) >= '0'.codeUnits[0] && 
+          expected[expectedLine].codeUnitAt(0) <= '9'.codeUnits[0]) ||
+          (expected[expectedLine].codeUnitAt(0) >= 'A'.codeUnits[0] && 
+          expected[expectedLine].codeUnitAt(0) <= 'F'.codeUnits[0])))
+      {
+        var peeks = expected[expectedLine].split(' ');
+        peeks.removeWhere((item) => item.length == 0);
+        var addr = int.parse(peeks[0], radix: 16);
+        var idx = 1;
+        while (peeks[idx] != "-1")
+        {
+          sink.write("    expect(memory.readByte($addr), equals(${peeks[idx]}));");
+          idx++;
+          addr++;
+        }
+        expectedLine++;
+      }
+      expectedLine++;
+
       sink.write("  });\n\n");
 
       if (undocumentedOpcodeTests.contains(testName)) {}
