@@ -87,8 +87,8 @@ namespace ProjectCambridge.EmulatorTests
             outputClass.WriteLine();
             outputClass.WriteLine();
 
-            var input = File.ReadAllLines(@"fuse_tests\tests.in").ToList();
-            var expected = File.ReadAllLines(@"fuse_tests\tests.expected").ToList();
+            var input = File.ReadAllLines(@"tests.in").ToList();
+            var expected = File.ReadAllLines(@"tests.expected").ToList();
 
             var inputLine = 0;
             var expectedLine = 0;
@@ -261,7 +261,7 @@ namespace ProjectCambridge.EmulatorTests
             outputClass.WriteLine("    }");
             outputClass.WriteLine("}");
 
-            string fusePath = @"C:\scratch\FuseUnitTests.cs";
+            string fusePath = @"FuseUnitTests.cs";
             File.WriteAllText(fusePath, outputClass.ToString());
         }
     }
