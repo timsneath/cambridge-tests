@@ -1,6 +1,6 @@
 # Cambridge Project
 
-The Cambridge project can be found at https://github.com/timsneath/cambridge
+The Cambridge project can be found at <https://github.com/timsneath/cambridge>
 
 This repo creates unit tests to exercise the Z80 emulator that is contained
 within it.
@@ -9,7 +9,7 @@ within it.
 
 The FUSE emulator contains a large unit test suite of over 1,300 tests,
 which cover both documented and undocumented opcodes:
-   http://fuse-emulator.sourceforge.net/
+   <http://fuse-emulator.sourceforge.net/>
 
 The tests are delivered in two files: a tests.in file that contains test
 inputs and a tests.expected that gives the expected output state for the
@@ -24,7 +24,7 @@ of the results.
    location of the test files and output as appropriate
 
 2. Copy the resultant `fusetests.dart` to the Cambridge `EmulatorTests/tests`
-folder and run it with
+   folder and run it with
 
 ```bash
    pub run test tests/fuse-tests.dart
