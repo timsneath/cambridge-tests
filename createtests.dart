@@ -6,7 +6,7 @@ String toHex16(int value) => value.toRadixString(16).padLeft(2, '0');
 String toHex32(int value) => value.toRadixString(16).padLeft(4, '0');
 
 main() {
-  var file = new File('../cambridge/EmulatorDart/test/fuse_unit_test.dart');
+  var file = File('../cambridge/EmulatorDart/test/fuse_unit_test.dart');
   var sink = file.openWrite();
 
   String testName;
@@ -26,8 +26,8 @@ import '../z80.dart';
 import '../memory.dart';
 import '../utility.dart';
 
-Memory memory = new Memory(false);
-Z80 z80 = new Z80(memory, startAddress: 0xA000);
+Memory memory = Memory(false);
+Z80 z80 = Z80(memory, startAddress: 0xA000);
 
 void poke(int addr, int val) => memory.writeByte(addr, val);
 int peek(int addr) => memory.readByte(addr);
@@ -216,8 +216,8 @@ main() {
     }
   }
 
-  List<String> input = new File('tests.in').readAsLinesSync();
-  List<String> expected = new File('tests.expected').readAsLinesSync();
+  List<String> input = File('tests.in').readAsLinesSync();
+  List<String> expected = File('tests.expected').readAsLinesSync();
 
   try {
     int inputLine = 0;
@@ -273,7 +273,9 @@ main() {
       sink.write("    }\n");
 
       if (expected[expectedLine++] != testName) {
-        throw new Exception("Mismatch of input and output lines: $testName and ${expected[expectedLine-1]}");
+        throw Exception(
+            "Mismatch of input and output lines: $testName and "
+            "${expected[expectedLine - 1]}");
       }
 
       while (expected[expectedLine].startsWith(' ')) {
@@ -309,17 +311,15 @@ main() {
       expectedLine++;
 
       while (expected[expectedLine].length > 0 &&
-          ((expected[expectedLine].codeUnitAt(0) >= '0'.codeUnits[0] && 
-          expected[expectedLine].codeUnitAt(0) <= '9'.codeUnits[0]) ||
-          (expected[expectedLine].codeUnitAt(0) >= 'a'.codeUnits[0] && 
-          expected[expectedLine].codeUnitAt(0) <= 'f'.codeUnits[0])))
-      {
+          ((expected[expectedLine].codeUnitAt(0) >= '0'.codeUnits[0] &&
+                  expected[expectedLine].codeUnitAt(0) <= '9'.codeUnits[0]) ||
+              (expected[expectedLine].codeUnitAt(0) >= 'a'.codeUnits[0] &&
+                  expected[expectedLine].codeUnitAt(0) <= 'f'.codeUnits[0]))) {
         var peeks = expected[expectedLine].split(' ');
         peeks.removeWhere((item) => item.length == 0);
         var addr = int.parse(peeks[0], radix: 16);
         var idx = 1;
-        while (peeks[idx] != "-1")
-        {
+        while (peeks[idx] != "-1") {
           sink.write("    expect(peek($addr), equals(0x${peeks[idx]}));\n");
           idx++;
           addr++;
@@ -329,13 +329,12 @@ main() {
       expectedLine++;
 
       sink.write("  }");
-      
+
       if (undocumentedOpcodeTests.contains(testName)) {
         sink.write(", tags: 'undocumented'");
       }
 
       sink.write(");\n\n");
-
     }
 
     sink.write(r"""
