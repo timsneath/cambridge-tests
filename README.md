@@ -20,12 +20,12 @@ of the results.
 
 ### Instructions
 
-1. Execute the command utility CreateUnitTests.dart, having adjusted the
-   location of the test files and output as appropriate
+1. Execute the command utility `createtests.dart`, having adjusted the
+   location of the test files and output as appropriate.
 
-2. Copy the resultant `fusetests.dart` to the Cambridge `EmulatorTests/tests`
-   folder and run it with
+2. Copy the resultant `fuse-z80-tests.dart` to the Cambridge `tests/`
+   directory and run it with:
 
 ```bash
-   pub run test tests/fuse-tests.dart
+   pub run test tests/fuse-z80-tests..dart
 ```

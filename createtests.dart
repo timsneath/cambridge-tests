@@ -6,7 +6,7 @@ String toHex16(int value) => value.toRadixString(16).padLeft(2, '0');
 String toHex32(int value) => value.toRadixString(16).padLeft(4, '0');
 
 main() {
-  var file = File('../cambridge/EmulatorDart/test/fuse_unit_test.dart');
+  var file = File('../fuse-z80-tests.dart');
   var sink = file.openWrite();
 
   String testName;
@@ -273,8 +273,7 @@ main() {
       sink.write("    }\n");
 
       if (expected[expectedLine++] != testName) {
-        throw Exception(
-            "Mismatch of input and output lines: $testName and "
+        throw Exception("Mismatch of input and output lines: $testName and "
             "${expected[expectedLine - 1]}");
       }
 
