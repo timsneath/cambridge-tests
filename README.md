@@ -23,9 +23,9 @@ of the results.
 1. Execute the command utility `createtests.dart`, having adjusted the
    location of the test files and output as appropriate.
 
-2. Copy the resultant `fuse-z80-tests.dart` to the Cambridge `tests/`
+2. Copy the resultant `fuse-z80-tests.dart` to the Cambridge `test/`
    directory and run it with:
 
 ```bash
-   pub run test tests/fuse-z80-tests..dart
+   pub run test test/fuse-z80-tests..dart
 ```
