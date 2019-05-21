@@ -6,7 +6,7 @@ String toHex16(int value) => value.toRadixString(16).padLeft(2, '0');
 String toHex32(int value) => value.toRadixString(16).padLeft(4, '0');
 
 main() {
-  var file = File('../fuse-z80-tests.dart');
+  var file = File('../fuse_z80_opcode_test.dart');
   var sink = file.openWrite();
 
   String testName;
@@ -18,13 +18,12 @@ main() {
 // which cover both documented and undocumented opcodes:
 //   http://fuse-emulator.sourceforge.net/ 
 
-// Run tests with 
-//   pub run test test/fuse_unit_test.dart -x undocumented --no-color > test/results.txt
+// Run tests with `flutter test --plain-name=OPCODE` (for documented tests)
 
-import 'package:test/test.dart';
-import '../z80.dart';
-import '../memory.dart';
-import '../utility.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:spectrum/spectrum/z80.dart';
+import 'package:spectrum/spectrum/memory.dart';
+import 'package:spectrum/spectrum/utility.dart';
 
 Memory memory = Memory(false);
 Z80 z80 = Z80(memory, startAddress: 0xA000);
@@ -226,7 +225,13 @@ main() {
     while (inputLine < input.length) {
       testName = input[inputLine++];
       sink.write("\n  // Test instruction $testName\n");
-      sink.write("  test('$testName', () {\n");
+      sink.write("  test('");
+      if (undocumentedOpcodeTests.contains(testName)) {
+        sink.write('UNDOCUMENTED ');
+      } else {
+        sink.write('OPCODE ');
+      }
+      sink.write("$testName', () {\n");
 
       sink.write("    // Set up machine initial state\n");
       var registers = input[inputLine++].split(' ');

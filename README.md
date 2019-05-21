@@ -23,9 +23,9 @@ of the results.
 1. Execute the command utility `createtests.dart`, having adjusted the
    location of the test files and output as appropriate.
 
-2. Copy the resultant `fuse-z80-tests.dart` to the Cambridge `test/`
+2. Copy the resultant Dart output file to the Cambridge repo `spectrum/test/`
    directory and run it with:
 
 ```bash
-   pub run test test/fuse-z80-tests..dart
+   flutter test
 ```
