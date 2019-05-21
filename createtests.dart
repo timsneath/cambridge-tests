@@ -4,6 +4,8 @@ const bool includeUndocumentedOpcodeUnitTests = false;
 
 String toHex16(int value) => value.toRadixString(16).padLeft(2, '0');
 String toHex32(int value) => value.toRadixString(16).padLeft(4, '0');
+String toBin16(int value) => value.toRadixString(2).padLeft(16, '0');
+String toBin32(int value) => value.toRadixString(2).padLeft(32, '0');
 
 main() {
   var file = File('../fuse_z80_opcode_test.dart');
@@ -53,7 +55,10 @@ void loadRegisters(int af, int bc, int de, int hl, int af_, int bc_, int de_,
 
 void checkRegisters(int af, int bc, int de, int hl, int af_, int bc_, int de_,
     int hl_, int ix, int iy, int sp, int pc) {
-  expect(z80.af, equals(af), reason: "Register AF mismatch");
+  expect(highByte(z80.af), equals(highByte(af)), reason: "Register A mismatch");
+  expect(lowByte(z80.af), equals(lowByte(af)),
+      reason:
+          "Register AF mismatch: expected ${toBin8(lowByte(af))}, actual ${toBin8(lowByte(z80.af))}");
   expect(z80.bc, equals(bc), reason: "Register BC mismatch");
   expect(z80.de, equals(de), reason: "Register DE mismatch");
   expect(z80.hl, equals(hl), reason: "Register HL mismatch");
@@ -68,14 +73,14 @@ void checkRegisters(int af, int bc, int de, int hl, int af_, int bc_, int de_,
 }
 
 void checkSpecialRegisters(int i, int r, bool iff1, bool iff2, int tStates) {
-  expect(z80.i, equals(i));
+  expect(z80.i, equals(i), reason: "Register I mismatch");
 
   // TODO: r is magic and we haven't done magic yet
   // expect(z80.r, equals(r));
 
-  expect(z80.iff1, equals(iff1));
-  expect(z80.iff2, equals(iff2));
-  expect(z80.tStates, equals(tStates));
+  expect(z80.iff1, equals(iff1), reason: "Register IFF1 mismatch");
+  expect(z80.iff2, equals(iff2), reason: "Register IFF2 mismatch");
+  expect(z80.tStates, equals(tStates), reason: "tStates mismatch");
 }
 
 main() {
@@ -273,7 +278,7 @@ main() {
       inputLine++;
 
       sink.write("\n    // Execute machine for tState cycles\n");
-      sink.write("    while(z80.tStates < ${testRunLength}) {\n");
+      sink.write("    while (z80.tStates < ${testRunLength}) {\n");
       sink.write("      z80.executeNextInstruction();\n");
       sink.write("    }\n");
 
